@@ -1,5 +1,5 @@
 #!/bin/sh
 yum install -y python-devel
-wget https://bootstrap.pypa.io/get-pip.py
-python get-pip.py
+cd /tmp ; wget https://bootstrap.pypa.io/get-pip.py
+cd /tmp ; python get-pip.py
 pip install ansible
