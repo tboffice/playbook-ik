@@ -1,0 +1,12 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - name: upgrade all packages
+    yum: name=* state=latest
+  
+  - name: install packages
+    yum: name={{ item }} state=latest
+    with_items:
+       - httpd
+       - vim-enhanced
