@@ -1,0 +1,48 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: change httpd user
+      shell: sed -ie "s/User apache/User httpd/" /etc/httpd/conf/httpd.conf
+    
+    - name: change httpd group
+      shell: sed -ie "s/Group apache/User httpd/" /etc/httpd/conf/httpd.conf
+    
+    - name: httpd restart
+      service: name=httpd state=restarted
+
+    - name: change owner document root directory
+      file: path=/home/httpd/www owner=httpd group=httpd recurse=yes
+
+    - name: put my.cnf
+      copy: src=files/my.cnf dest=/etc/my.cnf owner=root group=root
+
+    - name: mysql start 
+      service: name=mysqld state=started
+
+    - stat: path=/tmp/all.sql
+      register: dp
+
+    - name: import db
+      mysql_db: name=all state=import target=/tmp/all.sql
+      when: dp.stat.exists 
+
+    - name: move dump file
+      shell: mv /tmp/all.sql /var/tmp/
+      when: dp.stat.exists 
+
+    - name: flush privileges
+      shell: mysqladmin flush-privileges 
+      ignore_errors: yes
+
+    - name: copy phpMyAdmin.conf
+      copy: src=files/phpMyAdmin.conf dest=/etc/httpd/conf.d/phpMyAdmin.conf owner=root group=root
+
+    - name: ssh settings
+      lineinfile: dest=/etc/ssh/sshd_config line="Port 8022"
+
+    - name: ssh settings
+      lineinfile: dest=/etc/ssh/sshd_config line="PermitRootLogin no"
+
+    - name: sshd restart 
+      service: name=sshd state=restarted

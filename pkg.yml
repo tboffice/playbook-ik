@@ -2,11 +2,23 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
+  - yum: name=http://rpms.famillecollet.com/enterprise/remi-release-6.rpm state=present
+    ignore_errors: yes
+
   - name: upgrade all packages
     yum: name=* state=latest
   
   - name: install packages
-    yum: name={{ item }} state=latest
+    yum: name={{ item }} state=present enablerepo=remi
     with_items:
+       - git
        - httpd
        - vim-enhanced
+       - mysql-server
+       - php
+       - php-mbstring
+       - php-mysql
+       - MySQL-python
+       - phpMyAdmin
+       - php-mcrypt
+

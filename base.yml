@@ -1,0 +1,36 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - name: set hostname
+    hostname: name=yoshihama4
+  
+  - name: create ore group
+    group: name=chiba state=present gid=1000
+  
+  - name: create ore user
+    user: name=chiba state=present uid=1000 group=chiba groups=wheel
+
+  - name: create httpd group
+    group: name=httpd state=present gid=1002
+  
+  - name: create httpd user
+    user: name=httpd state=present uid=1002 group=httpd groups=apache
+
+  - name: documentRoot settings
+    file: path=/home/httpd group=httpd owner=httpd mode=755
+
+  - name: create nanaka group
+    group: name=nanaka state=present gid=1100
+  
+  - name: create nanaka user
+    user: name=nanaka state=present uid=1100
+
+  - name: edit sudoers 
+    lineinfile: "regexp='^%wheel' line='%wheel ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers"
+
+  - name: create DocumentRoot Directory
+    file: path=/home/httpd/www state=directory group=httpd owner=httpd
+
+  - name: start httpd 
+    service: name=httpd state=started enabled=yes
