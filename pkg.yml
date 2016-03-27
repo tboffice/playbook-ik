@@ -21,4 +21,4 @@
        - MySQL-python
        - phpMyAdmin
        - php-mcrypt
-
+       - jwhois
